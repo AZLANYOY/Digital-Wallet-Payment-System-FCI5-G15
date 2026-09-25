@@ -6,6 +6,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <chrono>
 #include <ctime>
 
@@ -143,14 +144,28 @@ class DigitalWalletSystem {
     }
 
     double amount(const string& prompt) const {
-        while (true) {
-            cout << prompt;
-            string s; getline(cin, s);
-            stringstream ss(s); double value; char extra;
-            if (ss >> value && !(ss >> extra) && value > 0 && value <= 1000000) return value;
-            cout << "Invalid amount. Enter a value greater than RM0.\n";
+    while (true) {
+        cout << prompt;
+
+        string s;
+        getline(cin, s);
+
+        stringstream ss(s);
+        double value;
+        char extra;
+
+        if (ss >> value &&
+            !(ss >> extra) &&
+            isfinite(value) &&
+            value > 0 &&
+            value <= 1000000) {
+            return value;
         }
+
+        cout << "Invalid amount. Enter a valid value greater than RM0 "
+             << "and no more than RM1,000,000.\n";
     }
+}
 
     bool yesNo(const string& prompt) const {
         while (true) {
@@ -168,9 +183,23 @@ class DigitalWalletSystem {
     }
 
     bool validEmail(const string& email) const {
-        size_t at = email.find('@'), dot = email.rfind('.');
-        return at != string::npos && dot != string::npos && at > 0 && dot > at + 1 && dot < email.size() - 1;
+    size_t at = email.find('@');
+    size_t dot = email.rfind('.');
+
+    if (at == string::npos ||
+        dot == string::npos ||
+        at == 0 ||
+        dot <= at + 1 ||
+        dot >= email.size() - 1) {
+        return false;
     }
+
+    if (email.find(' ') != string::npos) {
+        return false;
+    }
+
+    return true;
+}
 
     User* findUser(const string& id) {
         for (auto& u : users) if (u->getId() == id) return u.get();
