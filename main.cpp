@@ -10,7 +10,21 @@
 #include <ctime>
 
 using namespace std;
+bool yesNo(const string& prompt) const {
+    while (true) {
+        cout << prompt << " (Y/N): ";
+        string s; getline(cin, s);
+        if (s == "Y" || s == "y") return true;
+        if (s == "N" || s == "n") return false;
+        cout << "Please enter Y or N.\n";
+    }
+}
 
+void pause() const {
+    cout << "\nPress ENTER to continue...";
+    string s;
+    getline(cin, s);
+}
 enum class UserType { Customer, Merchant, Admin };
 
 class Transaction {
@@ -442,23 +456,49 @@ class DigitalWalletSystem {
     }
 
     void customerMenu(User* u) {
-        while (true) {
-            title("CUSTOMER MENU");
-            cout << "Welcome, " << u->getName() << "!\n\n"
-                 << "1. Check Balance\n2. Top Up Wallet\n3. Transfer Money\n"
-                 << "4. Make Payment\n5. Pay Bills\n6. Transaction History\n"
-                 << "7. Account Information\n8. Logout\n";
-            int c = integer("Enter your choice: ", 1, 8);
-            if (c == 1) checkBalance(u);
-            else if (c == 2) topUp(u);
-            else if (c == 3) transfer(u);
-            else if (c == 4) payment(u);
-            else if (c == 5) bills(u);
-            else if (c == 6) history(u);
-            else if (c == 7) account(u);
-            else { cout << "Logging out...\n"; return; }
+    while (true) {
+        title("CUSTOMER MENU");
+        cout << "Welcome, " << u->getName() << "!\n\n"
+             << "1. Check Balance\n2. Top Up Wallet\n3. Transfer Money\n"
+             << "4. Make Payment\n5. Pay Bills\n6. Transaction History\n"
+             << "7. Account Information\n8. Logout\n";
+
+        int c = integer("Enter your choice: ", 1, 8);
+
+        if (c == 1) {
+            checkBalance(u);
+            pause();
+        }
+        else if (c == 2) {
+            topUp(u);
+            pause();
+        }
+        else if (c == 3) {
+            transfer(u);
+            pause();
+        }
+        else if (c == 4) {
+            payment(u);
+            pause();
+        }
+        else if (c == 5) {
+            bills(u);
+            pause();
+        }
+        else if (c == 6) {
+            history(u);
+            pause();
+        }
+        else if (c == 7) {
+            account(u);
+            pause();
+        }
+        else {
+            cout << "Logging out...\n";
+            return;
         }
     }
+}
 
     void merchantMenu(User* u) {
         while (true) {
@@ -476,20 +516,40 @@ class DigitalWalletSystem {
     }
 
     void adminMenu(User* u) {
-        while (true) {
-            title("ADMIN MENU");
-            cout << "Welcome, " << u->getName() << "!\n\n"
-                 << "1. View All Users\n2. Search User\n3. View All Transactions\n"
-                 << "4. System Statistics\n5. Deactivate User\n6. Logout\n";
-            int c = integer("Enter your choice: ", 1, 6);
-            if (c == 1) allUsers();
-            else if (c == 2) searchUser();
-            else if (c == 3) allTransactions();
-            else if (c == 4) statistics();
-            else if (c == 5) deactivate();
-            else { cout << "Logging out...\n"; return; }
+    while (true) {
+        title("ADMIN MENU");
+        cout << "Welcome, " << u->getName() << "!\n\n"
+             << "1. View All Users\n2. Search User\n3. View All Transactions\n"
+             << "4. System Statistics\n5. Deactivate User\n6. Logout\n";
+
+        int c = integer("Enter your choice: ", 1, 6);
+
+        if (c == 1) {
+            allUsers();
+            pause();
+        }
+        else if (c == 2) {
+            searchUser();
+            pause();
+        }
+        else if (c == 3) {
+            allTransactions();
+            pause();
+        }
+        else if (c == 4) {
+            statistics();
+            pause();
+        }
+        else if (c == 5) {
+            deactivate();
+            pause();
+        }
+        else {
+            cout << "Logging out...\n";
+            return;
         }
     }
+}
 
     void route(User* u) {
         if (u->getType() == UserType::Customer) customerMenu(u);
