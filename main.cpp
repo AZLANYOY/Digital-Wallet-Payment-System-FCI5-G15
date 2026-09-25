@@ -336,18 +336,52 @@ class DigitalWalletSystem {
     }
 
     void history(User* u) const {
-        title("TRANSACTION HISTORY");
-        bool found = false;
-        cout << left << setw(8) << "ID" << setw(18) << "TYPE" << setw(30) << "DESCRIPTION"
-             << setw(14) << "AMOUNT" << "DATE/TIME\n";
-        line('-', 105);
-        for (const auto& t : transactions) {
-            if (t.getSenderId() == u->getId() || t.getReceiverId() == u->getId()) {
-                showTransaction(t, u); found = true;
+    title("TRANSACTION HISTORY");
+
+    bool found = false;
+    int transactionCount = 0;
+    double incoming = 0.0;
+    double outgoing = 0.0;
+
+    cout << left
+         << setw(8) << "ID"
+         << setw(18) << "TYPE"
+         << setw(30) << "DESCRIPTION"
+         << setw(14) << "AMOUNT"
+         << "DATE/TIME\n";
+
+    line('-', 105);
+
+    for (const auto& t : transactions) {
+        if (t.getSenderId() == u->getId() ||
+            t.getReceiverId() == u->getId()) {
+
+            showTransaction(t, u);
+            found = true;
+            ++transactionCount;
+
+            if (t.getReceiverId() == u->getId()) {
+                incoming += t.getAmount();
+            }
+
+            if (t.getSenderId() == u->getId()) {
+                outgoing += t.getAmount();
             }
         }
-        if (!found) cout << "No transactions found.\n";
     }
+
+    if (!found) {
+        cout << "No transactions found.\n";
+        return;
+    }
+
+    line('-', 105);
+
+    cout << "\nTRANSACTION SUMMARY\n";
+    cout << "Number of Transactions : " << transactionCount << '\n';
+    cout << "Total Incoming         : RM" << money(incoming) << '\n';
+    cout << "Total Outgoing         : RM" << money(outgoing) << '\n';
+}
 
     void account(User* u) const {
         title("ACCOUNT INFORMATION");
