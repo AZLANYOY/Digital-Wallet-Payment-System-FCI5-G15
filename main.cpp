@@ -283,23 +283,46 @@ class DigitalWalletSystem {
     }
 
     User* login() {
-        title("LOGIN");
-        string id = nonEmpty("Enter User ID: ");
-        User* user = findUser(id);
-        if (!user) { cout << "User account not found.\n"; return nullptr; }
-        if (!user->isActive()) { cout << "This account has been deactivated.\n"; return nullptr; }
+    title("LOGIN");
 
-        for (int attempt = 1; attempt <= 3; ++attempt) {
-            string pin = nonEmpty("Enter 4-digit PIN: ");
-            if (pin == user->getPin()) {
-                cout << "\nLogin successful. Welcome, " << user->getName() << "!\n";
-                return user;
-            }
-            cout << "Incorrect PIN. Attempts remaining: " << 3 - attempt << '\n';
-        }
-        cout << "Too many incorrect attempts. Login blocked.\n";
+    string id = nonEmpty("Enter User ID: ");
+    User* user = findUser(id);
+
+    if (!user) {
+        cout << "User account not found.\n";
         return nullptr;
     }
+
+    if (!user->isActive()) {
+        cout << "This account has been deactivated.\n";
+        return nullptr;
+    }
+
+    int attempts = 0;
+
+    while (attempts < 3) {
+        string pin = nonEmpty("Enter 4-digit PIN: ");
+
+        if (!validPin(pin)) {
+            cout << "Invalid PIN format. PIN must contain exactly 4 digits.\n";
+            continue;
+        }
+
+        ++attempts;
+
+        if (pin == user->getPin()) {
+            cout << "\nLogin successful. Welcome, "
+                 << user->getName() << "!\n";
+            return user;
+        }
+
+        cout << "Incorrect PIN. Attempts remaining: "
+             << 3 - attempts << '\n';
+    }
+
+    cout << "Too many incorrect PIN attempts. Login blocked.\n";
+    return nullptr;
+}
 
     void checkBalance(User* u) const {
         title("WALLET BALANCE");
